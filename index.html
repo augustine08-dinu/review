@@ -1,179 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kefi Cafe – Review</title>
+  <meta charset="UTF-8" />
+  <title>Leave a Review</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', sans-serif;
-        }
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 8px;
+      width: 350px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
 
-        body {
-            background: linear-gradient(135deg,#f6f1e9,#efe6d8);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
+    input, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+    }
 
-        .card {
-            background: #fff;
-            max-width: 420px;
-            width: 100%;
-            border-radius: 18px;
-            padding: 28px;
-            box-shadow: 0 15px 40px rgba(0,0,0,.12);
-            text-align: center;
-        }
-
-        .logo {
-            font-size: 28px;
-            font-weight: 600;
-            color: #8b6f47;
-        }
-
-        .tagline {
-            font-size: 14px;
-            color: #777;
-            margin-bottom: 16px;
-        }
-
-        .about {
-            font-size: 14px;
-            color: #555;
-            line-height: 1.6;
-            background: #faf7f2;
-            padding: 14px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
-
-        .stars {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-
-        .star {
-            font-size: 34px;
-            cursor: pointer;
-            color: #d0d0d0;
-        }
-
-            .star.active {
-                color: #f2b705;
-            }
-
-        textarea {
-            display: none;
-            width: 100%;
-            height: 90px;
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid #ddd;
-            margin-top: 10px;
-            resize: none;
-        }
-
-        button {
-            display: none;
-            margin-top: 12px;
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 12px;
-            background: #8b6f47;
-            color: #fff;
-            font-size: 15px;
-            cursor: pointer;
-        }
-
-        #thankyou {
-            display: none;
-            margin-top: 20px;
-            font-size: 15px;
-            color: #555;
-            line-height: 1.6;
-        }
-    </style>
+    button {
+      background: black;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
 </head>
-
 <body>
-    <div class="card">
-        <div class="logo">☕ Kefi Cafe</div>
-        <div class="tagline">Coffee • Comfort • Conversations</div>
 
-        <div class="about">
-            Your feedback helps us improve and serve you better every day.
-        </div>
+<div class="card">
+  <h2>Leave a Review</h2>
 
-        <div class="stars">
-            <span class="star">★</span>
-            <span class="star">★</span>
-            <span class="star">★</span>
-            <span class="star">★</span>
-            <span class="star">★</span>
-        </div>
+  <input id="name" placeholder="Your Name" required />
+  <input id="phone" placeholder="Phone Number" required />
+  <input id="rating" type="number" min="1" max="5" placeholder="Rating (1–5)" required />
+  <textarea id="review" placeholder="Write your review"></textarea>
 
-        <textarea id="comment" placeholder="Tell us what went wrong..."></textarea>
-        <button id="submitBtn">Submit</button>
+  <button onclick="submitReview()">Submit Review</button>
+</div>
 
-        <div id="thankyou">
-            💛 Thank you for your review.<br>
-            We appreciate your feedback and will look into it.
-        </div>
-    </div>
+<script>
+function submitReview() {
+  fetch("https://backend-smzw.onrender.com/review", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      name: document.getElementById("name").value,
+      phone: document.getElementById("phone").value,
+      rating: Number(document.getElementById("rating").value),
+      review: document.getElementById("review").value
+    })
+  })
+  .then(res => res.json())
+  .then(() => {
+    alert("Review submitted successfully!");
+    document.querySelector("form")?.reset();
+  })
+  .catch(() => {
+    alert("Error submitting review");
+  });
+}
+</script>
 
-    <script>
-        const stars = document.querySelectorAll(".star");
-        const comment = document.getElementById("comment");
-        const submitBtn = document.getElementById("submitBtn");
-        const thankyou = document.getElementById("thankyou");
-
-        let rating = 0;
-
-        stars.forEach((star, index) => {
-            star.addEventListener("click", () => {
-                rating = index + 1;
-
-                stars.forEach(s => s.classList.remove("active"));
-                for (let i = 0; i <= index; i++) {
-                    stars[i].classList.add("active");
-                }
-
-                if (rating >= 4) {
-                    window.location.href = "https://g.page/r/YOUR_GOOGLE_REVIEW_LINK";
-                } else {
-                    comment.style.display = "block";
-                    submitBtn.style.display = "block";
-                }
-            });
-        });
-
-        submitBtn.addEventListener("click", () => {
-            fetch("https://backend-q38e.onrender.com/review", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    rating: rating,
-                    comment: comment.value
-                })
-            }).then(() => {
-                document.querySelector(".stars").style.display = "none";
-                comment.style.display = "none";
-                submitBtn.style.display = "none";
-                thankyou.style.display = "block";
-            });
-        });
-    </script>
 </body>
 </html>
